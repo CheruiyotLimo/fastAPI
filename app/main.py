@@ -32,7 +32,7 @@ while True:
         print("Database connection failed")
         print(error)
         time.sleep(2)
-
+        time.sleep(2)
 my_posts = [{"tile": "Kenya", "content": "A beautiful state.", "id": 1}, {"tile": "Uganda", "content": "A not so beautiful state.", "id": 2}]
 
 def find_post(id):
