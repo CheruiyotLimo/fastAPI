@@ -20,7 +20,6 @@ class Post(BaseModel):
     title: str
     content: str
     published: bool = True
-    rating: Optional[int] = None
 
 while True:
     try:
@@ -32,7 +31,7 @@ while True:
         print("Database connection failed")
         print(error)
         time.sleep(2)
-        time.sleep(2)
+
 my_posts = [{"tile": "Kenya", "content": "A beautiful state.", "id": 1}, {"tile": "Uganda", "content": "A not so beautiful state.", "id": 2}]
 
 def find_post(id):
@@ -49,26 +48,27 @@ def find_post_index(id):
 async def root():
     return {"message": "Hello World!!!"}
 
-@app.get("/sqlachemy")
+@app.get("/sqlalchemy")
 def test_posts(db: Session = Depends(get_db)):
-    return {"status": "Success"}
+    posts = db.query(models.Post).all()
+    return {"data": posts}
 
 
 @app.get("/posts")
-def get_posts():
-    cursor.execute("""SELECT * FROM posts""")
-    posts = cursor.fetchall()
+def get_posts(db: Session = Depends(get_db)):
+    posts = db.query(models.Post).all()
+
+    # cursor.execute("""SELECT * FROM posts""")
+    # posts = cursor.fetchall()
     print(posts)
     return {"data": posts}
 
 @app.post("/posts", status_code=status.HTTP_201_CREATED)
-def create_post(post: Post):
-    cursor.execute("""INSERT INTO posts (title, content, published) VALUES (%s, %s, %s) RETURNING * """, (post.title, post.content, post.published))
-    new_post = cursor.fetchone()
-    conn.commit()
-    # post_dict = post.dict()
-    # post_dict["id"] = randrange(0, 1000000)
-    # my_posts.append(post_dict)
+def create_post(post: Post, db: Session = Depends(get_db)):
+    new_post = models.Post(**post.dict())
+    db.add(new_post)
+    db.commit()
+    db.refresh(new_post)
     return {"data": new_post}
 
 
