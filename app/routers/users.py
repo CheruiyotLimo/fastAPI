@@ -17,6 +17,7 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     
     if user:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=f"User with email: {user.email} already exists.")
+        
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
