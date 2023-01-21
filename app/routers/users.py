@@ -15,7 +15,7 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     new_user = models.User(**user.dict())
     user_check = db.query(models.User).filter(models.User.email == user.email).first()
     
-    if user:
+    if user_check:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=f"User with email: {user.email} already exists.")
         
     db.add(new_user)
