@@ -10,17 +10,16 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 SECRET_KEY = "01vsdty548sghk89pttes7a82vh2i2osef8hb5swrt2366lp8if2s2a5s899a4"
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 
 def create_access_token(data: dict):
     to_encode = data.copy()
-    expiry_time = datetime.now() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode.update({"expiry": jsonable_encoder(expiry_time)})
+    expiry_time = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    to_encode.update({"expiry": (jsonable_encoder(expiry_time))})
 
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
-
 
 def verify_access_token(token: str, credentials_exception):
     try:
@@ -36,5 +35,5 @@ def verify_access_token(token: str, credentials_exception):
     return token_data
     
 def get_current_user(token: str = Depends(oauth2_scheme)):
-    credential_exception = HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=f"Could not validate credentials", headers= {"WWW-Authenticate": "Bearer"})
+    credential_exception = HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=f"Could not validate credentials", headers= {"WWW-Authenticate": "Bearer"}, )
     return verify_access_token(token=token, credentials_exception=credential_exception)
