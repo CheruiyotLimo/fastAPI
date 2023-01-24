@@ -13,6 +13,7 @@ class PostCreate(PostBase):
 class PostReturn(PostBase):
     id: str
     created_at: datetime
+    owner_id: int
     class Config:
         orm_mode = True
 
