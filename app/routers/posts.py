@@ -18,7 +18,7 @@ def get_posts(db: Session = Depends(get_db), current_user: int = Depends(oauth2w
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.PostReturn)
 def create_post(post: schemas.PostCreate, db: Session = Depends(get_db), current_user: int = Depends(oauth2w.get_current_user)):
-    new_post = models.Post(**post.dict())
+    new_post = models.Post(owner_id = current_user.id, **post.dict())
     print(current_user.email)
     db.add(new_post)
     db.commit()
@@ -36,9 +36,14 @@ def get_single_post(id: int, db: Session = Depends(get_db), curent_user: int = D
 
 @router.delete("/{id}")
 def delete_post(id: int, db: Session = Depends(get_db), current_user: int = Depends(oauth2w.get_current_user)):
-    post = db.query(models.Post).filter(models.Post.id == id)
-    if post.first() == None:
+    post_query = db.query(models.Post).filter(models.Post.id == id)
+    post = post_query.first()
+    if post == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"The post with id {id} does not exist.")
+
+    if post.owner_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Requested action is forbidden.")
+
     post.delete(synchronize_session=False)
     db.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)
@@ -48,8 +53,13 @@ def delete_post(id: int, db: Session = Depends(get_db), current_user: int = Depe
 def update_post(id: int, updated_post: schemas.PostCreate, db: Session = Depends(get_db), current_user: int = Depends(oauth2w.get_current_user)):
     post_query = db.query(models.Post).filter(models.Post.id == id)
     post = post_query.first()
+    
     if post == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"The post with id {id} does not exist.")
+    
+    if post.owner_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Requested action is forbidden.")
+
     post_query.update(updated_post.dict(), synchronize_session=False)
     db.commit()
     return post_query.first()
