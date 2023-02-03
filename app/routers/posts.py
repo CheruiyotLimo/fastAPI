@@ -10,8 +10,11 @@ router = APIRouter(
 )
 
 @router.get("/", response_model=List[schemas.PostReturn])
-def get_posts(db: Session = Depends(get_db), current_user: int = Depends(oauth2w.get_current_user)):
-    posts = db.query(models.Post).all()
+def get_posts(db: Session = Depends(get_db), current_user: int = Depends(oauth2w.get_current_user), limit: int = 10,
+                skip: int = 0, search: Optional[str] = ""):
+    print(limit)
+
+    posts = db.query(models.Post).filter(models.Post.title.contains(search)).limit(limit).offset(skip).all()
     print(current_user.email)
     print(posts)
     return posts
@@ -50,7 +53,8 @@ def delete_post(id: int, db: Session = Depends(get_db), current_user: int = Depe
 
 
 @router.put("/{id}", response_model=schemas.PostReturn)
-def update_post(id: int, updated_post: schemas.PostCreate, db: Session = Depends(get_db), current_user: int = Depends(oauth2w.get_current_user)):
+def update_post(id: int, updated_post: schemas.PostCreate, db: Session = Depends(get_db), 
+                current_user: int = Depends(oauth2w.get_current_user)):
     post_query = db.query(models.Post).filter(models.Post.id == id)
     post = post_query.first()
     
