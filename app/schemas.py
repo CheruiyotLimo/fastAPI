@@ -7,20 +7,6 @@ class PostBase(BaseModel):
     content: str
     published: bool = True
 
-class PostCreate(PostBase):
-    pass
-
-class PostReturn(PostBase):
-    id: str
-    created_at: datetime
-    owner_id: int
-    class Config:
-        orm_mode = True
-
-class UserCreate(BaseModel):
-    email: EmailStr
-    password: str
-
 class UserReturn(BaseModel):
     id: str
     email: EmailStr
@@ -31,6 +17,24 @@ class UserReturn(BaseModel):
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
+
+class PostCreate(PostBase):
+    pass
+
+class PostReturn(PostBase):
+    id: str
+    created_at: datetime
+    owner_id: int
+    owner: UserReturn
+
+    class Config:
+        orm_mode = True
+
+class UserCreate(BaseModel):
+    email: EmailStr
+    password: str
+
+
 
 class Token(BaseModel):
     access_token: str
