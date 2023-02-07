@@ -45,5 +45,9 @@ class TokenData(BaseModel):
 
 class OwnerReturn(BaseModel):
     name: str
+
+class Vote(BaseModel):
+    post_id: int
+    vote_dir: int
     
     
