@@ -30,6 +30,15 @@ class PostReturn(PostBase):
     class Config:
         orm_mode = True
 
+
+class PostVote(BaseModel):
+    Post: PostReturn
+    votes: int
+
+    class Config:
+        orm_mode = True
+
+
 class UserCreate(BaseModel):
     email: EmailStr
     password: str
