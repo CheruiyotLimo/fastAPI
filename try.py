@@ -1,3 +1,3 @@
-list1 = ["afhas, aidwi", "ippow, aiiwpa"]
-for i in list1:
-    print((", ").split(i))
+list1 = ["afhas", "aidwi", "ippow", "aiiwpa"]
+
+list1.index("aidwi")
