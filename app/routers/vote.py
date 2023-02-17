@@ -32,3 +32,11 @@ def vote(vote: schemas.Vote, db: Session = Depends(get_db), current_user: int = 
         vote_query.delete(synchronize_session=False)
         db.commit()
         return {"message": "Succesfully deleted vote."}
+    
+
+
+@router.get("/")
+def get_post_voters(id: int, db: Session = Depends(get_db), current_user: int = Depends(oauth2w.get_current_user)):
+    post = db.query(models.Post).filter(models.Post.id == vote.post_id).first()
+    if not post:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Vote with id {vote.post_id} doesn't exist")
