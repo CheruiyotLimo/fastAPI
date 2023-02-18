@@ -17,10 +17,10 @@ depends_on = None
 
 
 def upgrade() -> None:
-    op.add_column("users", sa.Column("username", sa.String(), nullable=False), sa.UniqueConstraint("username"))
+    op.add_column("users", sa.Column("username", sa.String(), nullable=False))
 
 
 def downgrade() -> None:
-    op.drop_constraint("username", "users")
+    # op.drop_constraint("username", "users")
     op.drop_column("users", "username")
     pass
