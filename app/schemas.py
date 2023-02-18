@@ -8,9 +8,10 @@ class PostBase(BaseModel):
     published: bool = True
 
 class UserReturn(BaseModel):
-    id: str
-    email: EmailStr
-    created_at: datetime
+    username: str
+    # id: str
+    # email: EmailStr
+    # created_at: datetime
     class Config:
         orm_mode = True
 
@@ -42,6 +43,7 @@ class PostVote(BaseModel):
 class UserCreate(BaseModel):
     email: EmailStr
     password: str
+    username: str
 
 
 
