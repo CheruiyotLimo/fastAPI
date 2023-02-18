@@ -74,3 +74,16 @@ def update_post(id: int, updated_post: schemas.PostCreate, db: Session = Depends
     post_query.update(updated_post.dict(), synchronize_session=False)
     db.commit()
     return post_query.first()
+
+@router.get("/votes/{id}", response_model=list)
+def get_post_voters(id: int, db: Session = Depends(get_db), current_user: int = Depends(oauth2w.get_current_user)):
+    """
+    return a list of accounts/people who have voted for this post
+    return type: list
+    """
+    post = db.query(models.Post).filter(models.Post.id == id).first()
+    if not post:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Vote with id {id} doesn't exist")
+
+    likers = db.query(models.Vote).filter(models.Vote.post_id == post.id).all()
+    return likers
