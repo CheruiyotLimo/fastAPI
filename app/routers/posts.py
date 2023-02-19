@@ -86,4 +86,5 @@ def get_post_voters(id: int, db: Session = Depends(get_db), current_user: int = 
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Vote with id {id} doesn't exist")
 
     voters = db.query(models.Vote).filter(models.Vote.post_id == post.id).all()
+    
     return voters
